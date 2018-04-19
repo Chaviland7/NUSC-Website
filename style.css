@@ -1,0 +1,1295 @@
+/*Theme Name: NUSC Theme
+Theme URI: https://www.northeastern.edu/clubswimming/
+Description: A theme for the Northeastern University Swim Club Website
+Version: 1.0
+Author: charliehaviland
+Author URI:
+Tags: Swimming Northeastern
+*/
+
+
+body {
+	position:relative;
+	height:100%;
+	background-attachment: fixed;
+	background-color: #1246B4;
+	background-image: url('media/images/UnderwaterBackground.jpg');
+	background-position: center center;
+	background-size: cover;
+	padding-bottom: 30px;
+}
+
+.modal-dialog {
+	margin: 10px auto;
+}
+
+a:hover {
+	color: inherit;
+}
+div.row {
+	margin:0;
+}
+.dropdown-menu {
+	width: 850px;
+	margin-top: -1px !important;
+}
+.dropdown-menu li {
+    display: inline-block;
+    width: 25%;
+		height: auto;
+}
+.dropdown-menu.Schedule li {
+	width: 33%;
+}
+.dropdown-menu.Records li {
+	width: 50%;
+}
+.dropdown-menu li a {
+    text-align: center;
+}
+img.navbar-dropdown-image {
+    max-width: 100%;
+}
+nav.navbar.navbar-default {
+	border: none;
+	background-color: rgba(74, 166, 233, 0.73);
+	border-bottom: 1px solid white;
+	border-radius: 0;
+}
+img.navbar-image {
+	max-height: 100%;
+}
+.navbar-brand {
+	padding:0px;
+	padding-left:10px;
+}
+ul.dropdown-menu li a h3 {
+	margin-top: 0px;
+}
+div.content-container {
+	max-width: 1900px;
+	margin: auto;
+	border-radius: 10px;
+	background-color: white;
+	padding:0;
+	width:75%;
+}
+div.pg-not-fnd {
+	text-align: center;
+}
+div.carousel-caption {
+	right: 0;
+	left: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,0.5);
+	padding-left: 10px;
+	padding-right: 10px;
+}
+ol.carousel-indicators {
+	bottom: 0;
+}
+div.carousel-caption a {
+  font-size: 30px;
+  font-family: helvetica;
+  font-weight: 700;
+	color: white;
+}
+div.single-post-container {
+	padding:15px;
+	border: 2px solid #1246B4;
+	border-radius: 10px;
+}
+div.single-post-container img,
+div.single-post-container div.wp-caption {
+	margin:10px;
+	border: 1px solid black;
+	padding: 4px;
+	border-radius: 5px;
+	max-width: 100%;
+}
+div.single-post-container div.wp-caption.aligncenter {
+	margin:auto;
+	margin-bottom: 15px;
+}
+div.single-post-container div.wp-caption img {
+	margin:0px;
+	border: none;
+	padding: 0;
+	border-radius: 0;
+	height: auto;
+}
+div.single-post-container img.alignleft,
+div.single-post-container div.wp-caption.alignleft {float:left;margin-left: 0;}
+div.single-post-container img.alignright,
+div.single-post-container div.wp-caption.alignright {float:right;margin-right: 0;}
+div.main-content hr { border-top: 3px dotted #1246B4;}
+div.main-content {
+	background-color: white;
+	padding: 15px;
+	border:2px solid #1246B4;
+	border-radius: 10px;
+}
+div.single-post-container.main-content {
+	border-radius: 10px;
+}
+
+div.main-content h1.title {
+    text-align: center;
+}
+div.single-post-container p {
+    font-size: 17px;
+    line-height: 27px;
+    margin-bottom: 20px;
+}
+div.single-post-container table td p {
+    font-size: 14px;
+}
+div.single-post-container table tr:nth-child(odd) {
+    background-color: #B9D8F0;
+}
+div.single-post-container p.date-author {
+	font-style: italic;
+	text-align: center;
+}
+div.single-post-container p.wp-caption-text {
+	margin:0;
+	padding:5px;
+	background-color: rgba(255,0,0,0.5);
+	font-size:14px;
+	line-height:20px;
+	text-align:center;
+	font-style: italic;
+}
+
+div.col-lg-3 {
+	xxheight: 200px;
+}
+div.row.footer-row {
+	width:75%;
+	height:200px;
+	margin:auto;
+}
+img.footer-img {
+	max-width:100%;
+	margin:auto;
+}
+div.roster-row div.pic img {
+	max-width: 100%;
+}
+
+div.meet_meta_container {
+	background-color: rgba(0,0,0,0.1);
+	width: 100%;
+	margin: auto;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.hs-wrapper.animated {
+	height:270px;
+	max-width:100%;
+}
+.hs-wrapper.animated img{
+	position: absolute;
+	animation: showMe 3s linear infinite 0s forwards;
+	animation-play-state: paused;
+	margin-left: -85px;
+	max-width:170px;
+}
+
+.hs-wrapper.animated img.MaleAthletes,
+.hs-wrapper.animated img.FemaleAthletes,
+.hs-wrapper.animated img.E-Board {
+	animation-duration: 3.3s
+}
+.hs-wrapper.animated img.Coaches {
+	animation-duration: 10000s
+}
+
+
+
+.hs-wrapper.animated:hover img{
+	animation-play-state: running;
+}
+@keyframes showMe {
+    0% { visibility: visible; z-index: 100; }
+	12.5% { visibility: visible; z-index: 100; }
+	25% { visibility: hidden; z-index: 0; }
+    100% { visibility: hidden; z-index: 0; }
+}
+.hs-wrapper.animated img:nth-child(1){z-index: 41;}
+.hs-wrapper.animated img:nth-child(2){animation-delay: 0.3s;z-index:40;}
+.hs-wrapper.animated img:nth-child(3){animation-delay: 0.6s;z-index: 39;}
+.hs-wrapper.animated img:nth-child(4){animation-delay: 0.9s;z-index: 38;}
+.hs-wrapper.animated img:nth-child(5){animation-delay: 1.2s;z-index: 37;}
+.hs-wrapper.animated img:nth-child(6){animation-delay: 1.5s;z-index: 36;}
+.hs-wrapper.animated img:nth-child(4){animation-delay: 1.8s;z-index: 35;}
+.hs-wrapper.animated img:nth-child(7){animation-delay: 2.1s;z-index: 34;}
+.hs-wrapper.animated img:nth-child(8){animation-delay: 2.4s;z-index: 33;}
+.hs-wrapper.animated img:nth-child(9){animation-delay: 2.7s;z-index: 32;}
+.hs-wrapper.animated img:nth-child(10){animation-delay: 3.0s;z-index: 31;}
+.hs-wrapper.animated img:nth-child(11){animation-delay: 3.3s;z-index: 30;}
+.hs-wrapper.animated img:nth-child(12){animation-delay: 3.6s;z-index: 29;}
+.hs-wrapper.animated img:nth-child(13){animation-delay: 3.9s;z-index: 28;}
+.hs-wrapper.animated img:nth-child(14){animation-delay: 4.2s;z-index: 27;}
+.hs-wrapper.animated img:nth-child(15){animation-delay: 4.5s;z-index: 26;}
+.hs-wrapper.animated img:nth-child(16){animation-delay: 4.8s;z-index: 25;}
+.hs-wrapper.animated img:nth-child(17){animation-delay: 5.1s;z-index: 24;}
+.hs-wrapper.animated img:nth-child(18){animation-delay: 5.4s;z-index: 23;}
+.hs-wrapper.animated img:nth-child(19){animation-delay: 5.7s;z-index: 22;}
+.hs-wrapper.animated img:nth-child(20){animation-delay: 6.0s;z-index: 21;}
+.hs-wrapper.animated img:nth-child(21){animation-delay: 6.3s;z-index: 20;}
+.hs-wrapper.animated img:nth-child(22){animation-delay: 6.6s;z-index: 19;}
+.hs-wrapper.animated img:nth-child(23){animation-delay: 6.9s;z-index: 18;}
+.hs-wrapper.animated img:nth-child(24){animation-delay: 7.2s;z-index: 17;}
+.hs-wrapper.animated img:nth-child(25){animation-delay: 7.5s;z-index: 16;}
+.hs-wrapper.animated img:nth-child(26){animation-delay: 7.8s;z-index: 15;}
+.hs-wrapper.animated img:nth-child(27){animation-delay: 8.1s;z-index: 14;}
+.hs-wrapper.animated img:nth-child(28){animation-delay: 8.4s;z-index: 13;}
+.hs-wrapper.animated img:nth-child(29){animation-delay: 8.7s;z-index: 12;}
+.hs-wrapper.animated img:nth-child(30){animation-delay: 9.0s;z-index: 11;}
+.hs-wrapper.animated img:nth-child(31){animation-delay: 9.3s;z-index: 10;}
+.hs-wrapper.animated img:nth-child(32){animation-delay: 9.6s;z-index: 9;}
+.hs-wrapper.animated img:nth-child(33){animation-delay: 9.9s;z-index: 8;}
+.hs-wrapper.animated img:nth-child(34){animation-delay: 10.2s;z-index: 7;}
+.hs-wrapper.animated img:nth-child(35){animation-delay: 10.5s;z-index: 6;}
+.hs-wrapper.animated img:nth-child(36){animation-delay: 10.8s;z-index: 5;}
+.hs-wrapper.animated img:nth-child(37){animation-delay: 11.1s;z-index: 4;}
+.hs-wrapper.animated img:nth-child(38){animation-delay: 11.4s;z-index: 3;}
+.hs-wrapper.animated img:nth-child(39){animation-delay: 11.7s;z-index: 2;}
+.hs-wrapper.animated img:nth-child(40){animation-delay: 12.0s;z-index: 1;}
+
+/*History Stuff*/
+.row.history_row:nth-child(odd) {
+    /* background-color: blue; */
+}
+
+.dark_blue {
+    text-align: center;
+    font-weight: bold;
+}
+
+.row.header_row p {
+    margin-bottom: 0;
+}
+
+.row.history_row div p {
+    margin-bottom: 3px;
+    font-size: 16px;
+}
+/*Footer Stuff*/
+
+.footer-logo .image-wrapper {
+    width: 50%;
+    margin: auto;
+}
+
+.row.footer-row {
+    margin: 50px 0;
+}
+
+.footer_text {
+    text-align: center;
+    width: 100%;
+    color: white;
+}
+
+/*Dropdown Stuff*/
+
+a.dropdown-toggle:focus {
+    color:white !important;
+}
+
+
+/* Records Stuff */
+
+#team_records_container .row.records_header div,
+#team_records_container .row.records_row div {
+    text-align: center;
+		padding: 0;
+}
+
+#team_records_container .row div.person {
+    text-align: left;
+		padding-left: 5px;
+}
+
+#team_records_container .dark_blue,
+#team_records_container .dark_blue h3,
+#team_records_container .dark_blue h4 {
+    text-align: center;
+    font-weight: bold;
+}
+
+.row.records_header {
+	padding-top: 5px;
+}
+
+.row.records_header p,
+.row.records_row p {
+    margin-bottom: 0;
+}
+
+.row.records_row:nth-child(odd) {
+	background-color: #B9D8F0;
+}
+
+#team_records_container .dark_blue h4 {
+	margin: 0;
+	padding-top: 5px;
+}
+
+#team_records_container .dark_blue h3 {
+	margin: 0;
+}
+
+/*Side Nav Stuff*/
+
+#side-nav-container {
+	width: 8%;
+	position: fixed;
+	right: 8%;
+}
+nav.side-nav ul.nav li a {
+	color:white;
+	padding:5px;
+	text-align:right;
+}
+
+nav.side-nav ul.nav li.active a {
+	border-left: 10px solid white;
+}
+nav.side-nav ul.nav li a:hover {
+	background-color: inherit;
+	border-left: 10px solid white;
+}
+
+.nav>li>a:focus {
+	background-color: inherit;
+}
+
+
+/*Swimmer Page Modal Stuff*/
+
+.modal-dialog.swimmer {
+    width: 90%;
+    max-width: 1200px;
+}
+
+h4.modal-title {
+    font-size: 30px;
+}
+
+div.modal-header {
+    padding: 10px 15px;
+    background: linear-gradient(to bottom right,red,rgb(128, 53, 53));
+    color: white;
+		text-align: center;
+}
+
+div.modal-footer {
+    background: linear-gradient(to top left,red,rgb(128, 53, 53));
+}
+
+button.close {
+    font-size: 44px;
+    color: white;
+    text-shadow: none;
+}
+
+.row.swimmer_modal_top .img_container,.row.swimmer_modal_top .info_container {
+    padding: 0px;
+}
+
+.row.swimmer_modal_top .row.info_container div:nth-child(odd) {
+    background-color: #B9D8F0;
+}
+
+.swimmer_page_info_row h3 {
+    margin-top: 0px;
+}
+
+.row.swimmer_modal_top .row.info_container div {
+    height: calc(438px/5);
+    padding-top: 32px;
+}
+
+div.row.swimmer_modal_top .img_container img {
+    width: 100%;
+}
+
+.row.swimmer_bio {
+    padding: 10px;
+    border-bottom: 1px solid black;
+		display: none;
+}
+
+.row.swimmer_modal_times .row.key {
+    margin-bottom: 0;
+    height: auto;
+    padding: 0;
+}
+
+.row.best_time div {
+    text-align: center;
+}
+.row.best_time .qualified {
+	color: #0dc10d !important;
+}
+
+.row.best_time .event {
+    text-align: left;
+}
+
+/*Roster Page Stuff*/
+h1.roster_header {
+    margin-top: 0;
+    text-align: center;
+}
+
+.roster-container.main-content div.roster-row:nth-child(even) {
+    background-color: #B9D8F0;
+}
+.roster-container.main-content div.roster-row {
+    border-right: 1px solid #B9D8F0;
+}
+
+div.roster-row div.pic, div.roster-row div.inner-roster-row {
+    padding: 0;
+}
+p.unknown {
+    color: rgba(0,0,0,.5);
+}
+
+div.roster-row div {
+	text-align: center;
+}
+div.roster-row div.pic a {
+	cursor: pointer;
+}
+
+div.inner-roster-row div p {
+	margin-bottom: 45px;
+	margin-top: 45px;
+	font-size: 18px;
+}
+
+
+
+/*Front Page Stuff*/
+
+.main-container {
+    max-width: 1500px;
+    margin: auto;
+    width: 90%;
+		margin-top: 65px;
+}
+.row.meet_meta_container div {
+    text-align: center;
+}
+
+.row.meet_meta_container div p {
+    margin-bottom: 0px;
+}
+
+a.dropdown-toggle:hover {
+    background-color: rgba(74, 166, 233, 1) !important;
+    color:white !important;
+}
+
+.navbar-default .navbar-nav .dropdown.open a {
+	background-color: inherit;
+}
+
+.navbar-default .navbar-nav li a.dropdown-toggle,
+.navbar-default .navbar-nav.navbar-right li a {
+    color: white;
+}
+
+button.donate.btn {
+    border: 1px solid white;
+    color: white;
+    background: none;
+    padding: 4px 8px;
+    margin-top: 9px;
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+button.donate.btn:hover {
+    border-width: 2px;
+    font-weight: bold;
+    margin-top: 8px;
+    margin-right: 18px;
+}
+
+.row.front-page-row {
+    padding: 0;
+    border-radius: 10px;
+    border: 2px solid #1246B4;
+}
+
+.row.front-page-row .blog-carousel-container.main-content {
+		border:none;
+    padding: 0;
+		padding-top: 10px;
+		border-radius: 0;
+}
+
+div#headlines-carousel {margin: 15px;margin-top:0;}
+
+div#meet_eboard {
+    padding: 15px;
+}
+
+div.row.front-page-row div.col-lg-3 {
+    background-color: rgba(230,230,230,0.93);
+		padding:0;
+}
+
+div#meet_eboard h3 {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+		color: #BB0000;
+}
+
+.front_eboard_member {
+    display: inline-block;
+    width: 20%;
+		padding:0px 3px;
+}
+
+.row.front_eboard_row {
+}
+
+
+div#meet_eboard h2 {
+    margin-top: 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+div.front_eboard_member img {
+    max-width: 100%;
+		box-shadow: 2px 4px 8px rgba(0,0,0,0.5);
+}
+
+div.front_eboard_member img:hover {
+    box-shadow: 3px 6px 8px rgba(0,0,0,0.4);
+}
+
+div.front-logo-container {
+	margin:0 auto;
+}
+
+#site_title {
+	text-align: center;
+	font-weight:bold;
+	font-size:21px;
+}
+
+a.launch_swimmer_modal {
+    color: rgb(29, 98, 158);
+}
+
+a.launch_swimmer_modal:hover {
+	cursor: pointer;
+}
+
+div.front-page-row div.side_bar.left {
+	border-top-left-radius: 7px;
+	border-bottom-left-radius: 7px;
+}
+div.front-page-row div.side_bar.right {
+	border-top-right-radius: 7px;
+	border-bottom-right-radius: 7px;
+}
+
+div.side_bar_title_container {
+	background-color: #62b5ed;
+  padding: 20px 10px;
+	text-align: center;
+	margin-top:75px;
+}
+div.side_bar div.side_bar_title_container:nth-child(1) {
+  border-top-right-radius: 7px;
+}
+div.side_bar div.side_bar_title_container.top {
+	margin-top: 0;
+}
+
+h2.side_bar_title {
+	margin: 0;
+	color: white;
+}
+
+div.side_bar_content {
+	padding: 10px;
+}
+div.side_bar_content.facebook {
+	padding-top: 0;
+}
+
+.fb-page, .fb-page iframe[style], .fb-page span {
+    width: 100% !important;
+}
+
+.upcoming_meets_container .meet div {
+    padding: 0;
+}
+
+.upcoming_meets_container .meet div.date {
+    border-left: 1px solid red;
+    padding-left: 10px;
+}
+
+.upcoming_meets_container .meet p,
+.team_announcements_container .announcement p {
+    margin: 0;
+}
+
+.upcoming_meets_container .meet div.date {
+    font-weight: bold;
+}
+
+.upcoming_meets_container .meet p.signup a {
+	  color: #337ab7;
+}
+
+div.tooltip,
+div.tooltip div:nth-child(2) {
+	padding:5px !important;
+}
+
+div.row.announcement div.title p,
+div.row.announcement div.popout span {
+	font-size: 17px;
+}
+
+div.upcoming_meets_container div.row.name {
+	font-size: 16px;
+}
+
+div.side_bar_content hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-color: red;
+}
+
+div.team_announcements_container hr {
+	margin: 0;
+}
+
+div.row.announcement {
+	padding: 5px 0;
+}
+div.row.announcement:hover{
+	background-color: rgba(98,181,237,0.15);
+	cursor: pointer;
+}
+
+div.row.announcement a,
+div.row.announcement a:hover,
+div.row.announcement a:active,
+div.row.announcement a:visited {
+	color:inherit;
+	text-decoration: none;
+}
+
+div.popout {
+	padding: 0;
+}
+div.announcement div.title {
+	padding-left:2px;
+}
+
+/*Announcements Modal Stuff */
+
+#Announcements .modal-dialog {
+	width: 90%;
+	max-width: 1400px;
+}
+
+#Announcements p.date-author {
+	margin:0;
+	color: white;
+}
+
+#Announcements .modal-dialog {
+    max-width: 800px;
+    margin: 200px auto;
+}
+
+#Announcements div.modal-header {
+    background: linear-gradient(to bottom right,#62b5ed,rgb(61, 105, 138));
+}
+
+#Announcements div.modal-footer {
+    background: linear-gradient(to top left,#62b5ed,rgb(61, 105, 138));
+}
+
+#Announcements div.modal-body {
+    font-size: 20px;
+}
+
+#Announcements div.modal-body h2 {
+    font-size: 40px;
+}
+#Announcements div.modal-body h2:nth-child(1) {
+    margin-top: 0px;
+}
+#Announcements div.modal-body {
+	text-align: center;
+}
+#Announcements div.Modal-body hr {
+	margin: 10px 0;
+	border-top-color: red;
+}
+
+/*Past Seasons Page Stuff*/
+
+.panel-title a:hover,
+.panel-title a:focus {
+	text-decoration: none;
+}
+img {
+    max-width: 100%;
+}
+div.panel-body.past-season div.logo_container {
+	max-width: 50%;
+	margin: 0 auto;
+}
+
+.panel-body.past-season {
+    padding: 0;
+}
+
+.past-season .row.meet_row {
+    padding: 15px;
+}
+
+div.logo img {
+    max-width: 100%;
+}
+
+div.meet_row div.logo {
+    padding: 0;
+}
+
+div.row.meet_row:nth-child(odd) {
+    background-color: #B9D8F0;
+}
+
+div.panel-default div.panel-heading {
+    background-color: #4F9DE8;
+    color: white;
+}
+
+.panel-title a {
+    color: white;
+}
+.panel-title a,
+.panel-title a:link {
+	color: inherit;
+}
+
+div.main-content.seasons div.logo img {
+	margin:0;
+	border:0;
+	padding: 0;
+	border-radius: 0;
+}
+
+div.results p:nth-child(1) {
+	font-weight: bold;
+}
+
+/* Coaches */
+div.coach_container {
+	width: 100%;
+	margin: auto;
+	max-width: 266px;
+	xxbackground-color: #B9D8F0;
+}
+div.coach h3 {
+	font-weight: bold;
+	text-align: center;
+	margin: 0;
+	padding: 10px;
+}
+
+/*//////////////////////////////////////	Responsive Design		////////////////////////////////////*/
+/* col-xxl */
+@media (max-width:2000px) {
+}
+@media (min-width:1700px) {
+}
+@media (min-width:1700px) and (max-width: 2000px) {
+}
+
+/* col-xl */
+@media (max-width:1699px) {
+}
+@media (min-width:1500px) {
+}
+@media (min-width:1500px) and (max-width: 1699px) {
+	div.inner-roster-row div p {
+		margin-bottom: 40px;
+		margin-top: 40px;
+		font-size: 17px;
+	}
+}
+/* col-lg */
+@media (max-width:1499px) {
+}
+@media (min-width:1200px) {
+}
+@media (min-width:1200px) and (max-width: 1499px) {
+	div.inner-roster-row div p {
+		margin-bottom: 35px;
+		margin-top: 35px;
+		font-size: 17px;
+	}
+}
+
+/* col-md */
+@media (max-width:1199px) {
+	#side-nav-container {
+		width: 10%;
+		right: 5%;
+	}
+	div.row.footer-row {
+		width: 100%;
+	}
+}
+@media (min-width:992px) {
+}
+@media (min-width:992px) and (max-width:1199px) {
+	div.inner-roster-row div p {
+		margin-bottom: 30px;
+		margin-top: 30px;
+		font-size: 17px;
+	}
+	.btn-block {
+		width: 33%;
+		display: inline-block!important;
+	}
+	.btn-block+.btn-block{
+		margin-top:0;
+	}
+}
+
+
+/* col-sm */
+@media (max-width:991px) {
+	div.hs-wrapper {
+		display:none;
+	}
+	ul.dropdown-menu li {
+		display:block;
+		color: white !important;
+	}
+	ul.dropdown-menu li a h3 {
+		color: white;
+		font-size: 15px;
+		text-align: left;
+		margin-left: 25px;
+	}
+	div.front-page-row div.side_bar.left {
+		border-top-right-radius: 7px;
+		border-bottom-left-radius: 0px;
+	}
+	div.front-page-row div.side_bar.right {
+		border-top-right-radius: 0px;
+		border-bottom-left-radius: 7px;
+	}
+	ul.nav.navbar-nav.navbar-right li {
+    display:  inline-block;
+    width: 40%;
+    margin-left: 5%;
+	}
+	#side-nav-container {
+		width: 12%;
+		right: 2%;
+	}
+	div.content-container {
+		width:85%;
+	}
+}
+@media (min-width:768px) {
+}
+@media (min-width:768px) and (max-width:991px) {
+	div.inner-roster-row div p {
+		margin-bottom: 25px;
+		margin-top: 25px;
+		font-size: 16px;
+	}
+}
+
+/* col-ms */
+@media (max-width:767px) {
+	div.inner-roster-row div p {
+		margin-bottom: 15px;
+		margin-top: 15px;
+		font-size: 16px;
+	}
+}
+@media (min-width:650px) {
+}
+@media (min-width:650px) and (max-width:767px) {
+	div.roster-row {
+		width: 33%;
+		display: inline-block;
+	}
+}
+
+/* col-mss */
+@media (max-width:649px) {
+	div.panel-heading,
+	div.row.meet_row div {
+		text-align: center;
+	}
+	#side-nav-container {
+		width: 15%;
+		right: 2%;
+	}
+	div.roster-row {
+		width: 50%;
+		display: inline-block;
+	}
+	.row.swimmer_bio {
+	    display: none;
+	}
+}
+@media (min-width:481px) {
+	.visible-xxs {
+		display:none!important;
+	}
+	.hidden-xxs {
+		display:block;
+	}
+	div.front-logo-container {
+		width:50%;
+		max-width: 100px;
+	}
+	.col-xs-push-2 {
+		left: auto;
+	}
+}
+@media (min-width:481px) and (max-width:649px) {
+	.front_eboard_member {
+			width: 33%;
+	}
+	.front_eboard_member:nth-last-child(2) {
+			margin-left: 17%;
+			margin-top: 10px;
+	}
+}
+
+/* col-xs */
+@media (max-width:480px) {
+	.hidden-xxs {
+		display:none!important;
+	}
+	.visible-xxs {
+		display:block;
+	}
+	div.roster-row div.pic img {
+		width: 100%;
+	}
+	div.inner-roster-row div.year,
+	div.inner-roster-row div.hometown,
+	div.inner-roster-row div.stroke,
+	div.inner-roster-row div.high_school {
+		display:none;
+	}
+	.row.inner-roster-row div.name {
+		display: none;
+	}
+
+	.front_eboard_member {
+			width: 50%;
+	}
+	.front_eboard_member:nth-last-child(1) {
+			margin-left: 25%;
+	}
+	.front_eboard_member:nth-last-child(1),
+	.front_eboard_member:nth-last-child(2) {
+			margin-top: 10px;
+	}
+	.col-xs-3.date {
+			text-align: center;
+	}
+	div#timestable div.event {
+			width: 30% !important;
+	}
+	div#timestable div.time {
+			width: 30% !important;
+	}
+	div#timestable div.meet {
+			width: 40% !important;
+	}
+	div#timestable div.venue,
+	div#timestable div.place,
+	div#timestable div.date {
+			display:none;
+	}
+	.swimmer_modal_top .row.info_container {
+			text-align: center;
+	}
+	div.carousel-caption a {
+		font-size: 20px;
+	}
+	div.carousel-caption {
+		padding-top: 10px;
+		padding-bottom: 15px;
+	}
+	.carousel-indicators li {
+		width: 6px;
+		height: 6px;
+	}
+	.carousel-indicators li.active {
+		width: 8px;
+		height: 8px;
+	}
+	ol.carousel-indicators {
+		margin-bottom: 6px;
+	}
+	a.btn-social-icon.btn-lg {
+		width: 100%;
+	}
+	div#meet_eboard {
+		padding: 15px 10px;
+	}
+	div#headlines-carousel {
+		margin: 10px;
+	}
+	#site_title {
+		margin-top: 25px;
+		font-size: 25px;
+		padding: 0;
+		width:65%;
+	}
+	img#front-logo {
+		margin-top: -75px;
+	}
+	div.front-logo-container {
+		padding: 0;
+		width: 33%;
+	}
+	div.front-logo-container,
+	#site_title {
+		display: inline-block;
+	}
+	.swimmer_page_info_row h3 {
+		margin: 0;
+		font-size: 20px;
+	}
+	.row.swimmer_modal_top .row.info_container div {
+		height: auto;
+		padding: 5px;
+	}
+	.row.swimmer_modal_times .row.key {
+		font-size: 14px;
+	}
+	div.meet_meta_container {
+		width: 85%;
+		margin: auto;
+		padding: 5px;
+		border-radius: 5px;
+	}
+	div.single-post-container p {
+		font-size: 13px;
+		line-height: 22px;
+		margin-bottom: 10px;
+	}
+	div.content-container {
+		width:100%;
+	}
+	div.blog-post h3 {
+		text-align: center;
+		font-size: 19px;
+	}
+	div.single-post-container p.wp-caption-text {
+		padding: 4px;
+		font-size: 13px;
+		line-height: 18px;
+	}
+	div.content-container .title {
+		margin-top: 5px;
+		margin-bottom: 0px;
+	}
+	div.side_bar_title_container {
+		padding: 10px;
+	}
+	div.records_header {
+		display: none;
+	}
+	#team_records_container div.row.records_row div.event {
+		font-weight: bold;
+		text-align: left;
+	}
+	.row.records_row:nth-child(even) {
+		border: 1px solid #B9D8F0;
+	}
+	div.side_bar_title_container {
+		margin-top:20px;
+	}
+	.row.best_time div {
+    font-size: 14px;
+	}
+	#Announcements .modal-dialog {
+		margin: 25px auto;
+	}
+	h4.modal-title {
+		font-size: 20px;
+	}
+	#Announcements div.modal-body {
+		font-size: 15px;
+	}
+}
+
+/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+div.row.column_headings div {
+	float: left;
+	text-align: center;
+	height: 20px;
+}
+
+.dark_blue {
+	background-color: #4F9DE8;
+}
+
+.fade_in {
+	-webkit-animation: fadein 0.8s; /* Safari, Chrome and Opera > 12.1 */
+	-moz-animation: fadein 0.8s; /* Firefox < 16 */
+	-ms-animation: fadein 0.8s; /* Internet Explorer */
+	-o-animation: fadein 0.8s; /* Opera < 12.1 */
+    animation: fadein 0.8s;
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0.3; }
+    to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0.3; }
+    to   { opacity: 1; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from { opacity: 0.3; }
+    to   { opacity: 1; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from { opacity: 0.3; }
+    to   { opacity: 1; }
+}
+
+/*personal swimmer page styling*/
+div.swimmer_page_container img.swimmer_pic {
+	width: 100%;
+	height: auto;
+}
+div.swimmer_info_row div {
+	padding-left: 1%;
+}
+div.swimmer_page_container div.row.title_row {
+	margin-bottom: 0px;
+}
+div.swimmer_page_container div.column_headings {
+	background-color: #B9D8F0;
+	margin-bottom: 5px;
+	text-align: center;
+}
+div.swimmer_page_container div.column_headings small {
+	padding-right: 10%;
+	padding-left: 10%;
+}
+div.swimmer_page_container div.swimmer_pic_container {
+	width: 31%;
+	height: 100% !important;
+	padding-left: 0px;
+	padding-top: 0px !important;
+}
+div.swimmer_page_container div.swimmer_name,
+div.swimmer_page_container div.swimmer_stroke,
+div.swimmer_page_container div.swimmer_height,
+div.swimmer_page_container div.swimmer_year,
+div.swimmer_page_container div.swimmer_hs,
+div.swimmer_page_container div.swimmer_hometown {
+	width: 68%;
+}
+div.swimmer_page_container div.swimmer_bio {
+	width: 100%;
+	padding: 5px 0;
+	clear: both;
+}
+
+div#tobeloaded {
+    padding: 0;
+    margin-top: 0px;
+}
+
+div.season_header {
+	text-align: center;
+	padding-top: 5px;
+}
+
+
+
+div#timestable div.event {
+	width: 16%;
+	overflow: hidden;
+}
+div#timestable div.time {
+	width: 14.4%;
+	overflow: hidden;
+}
+div#timestable div.meet {
+	width: 26%;
+	overflow: hidden;
+}
+div#timestable div.venue {
+	width: 22.5%;
+	overflow: hidden;
+}
+div#timestable div.place {
+	width: 5.8%;
+	overflow: hidden;
+}
+div#timestable div.date {
+	width: 15.3%;
+	overflow: hidden;
+}
+div.row.key div {
+	padding: 3px 0;
+	text-align: center;
+}
+
+img#load_icon {
+	max-width: 100%;
+}
+div#load_icon_container {
+	margin:auto;
+	max-width: 200px;
+}
+
+div#timestable div.row.best_time div {
+	float: left;
+}
+div#timestable div.row.best_time:nth-child(odd) {
+	background-color: #B9D8F0;
+}
+
+div.no_times {
+	width: 100%;
+}
