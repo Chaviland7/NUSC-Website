@@ -260,9 +260,15 @@
 					  <li>
 							<a href="mailto:nuclubswimteam@gmail.com?Subject=Question%20About%20NUSC" target="_blank">Contact Us</a>
 					  </li>
-						<li>
-							<!--<a href="#">Login (Admin)</a>-->
-						</li>
+							<?php if (is_user_logged_in()) { ?>
+								<li>
+									<a href="<?=get_permalink(690);?>">Admin</a>
+								</li>
+							<?php } else { ?>
+								<li>
+									<a href="<?php bloginfo('url') + '/wp-login.php';?>">Login</a>
+								</li>
+							<?php } ?>
 					</ul>
 		    </div><!-- /.navbar-collapse -->
 		  </div><!-- /.container-fluid -->

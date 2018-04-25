@@ -226,7 +226,7 @@ function get_header_row() {
 	$count = 0;
 	$header_args = array('post_type' => 'page',
 						 'sort_order' => 'desc',
-						 'include' => array(7,17,13,11));
+						 'include' => array(7,17,13,11,14));
 	$pages = get_pages($header_args);
 
 	foreach ($pages as $page) {
@@ -929,20 +929,26 @@ function get_top_ten() {
                                     FROM (
                                     SELECT MEET,
                                     	   ATHLETE,
-                                           TRIM(SCORE) as SCORE,
+                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
                                            DISTANCE,
                                            STROKE,
-                                           PLACE
+                                           PLACE,
+                                           I_R,
+                                           EX
                                     FROM RESULTS
                                     UNION ALL
                                     SELECT MEET,
                                     	   ATHLETE,
-                                           TRIM(SCORE) as SCORE,
+                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
                                            DISTANCE,
                                            STROKE,
-                                           PLACE
+                                           PLACE,
+                                           \"I\" AS I_R,
+                                           \"\" AS EX
                                     FROM MANUAL_RESULTS) as RESULTS NATURAL JOIN MEET NATURAL JOIN Athlete
-                                    WHERE SCORE != ''
+                                    WHERE SCORE != '00:00:00'
+                                    AND EX != 'X'
+                                    AND IR = 'I'
                                     AND SEX = 'M'
                                     AND DISTANCE = \"$event->DISTANCE\"
                                     AND STROKE = \"$event->STROKE\"
@@ -961,20 +967,26 @@ function get_top_ten() {
                                     FROM (
                                     SELECT MEET,
                                     	   ATHLETE,
-                                           TRIM(SCORE) as SCORE,
+                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
                                            DISTANCE,
                                            STROKE,
-                                           PLACE
+                                           PLACE,
+                                           I_R,
+                                           EX
                                     FROM RESULTS
                                     UNION ALL
                                     SELECT MEET,
                                     	   ATHLETE,
-                                           TRIM(SCORE) as SCORE,
+                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
                                            DISTANCE,
                                            STROKE,
-                                           PLACE
+                                           PLACE,
+                                           \"I\" AS I_R,
+                                           \"\" AS EX
                                     FROM MANUAL_RESULTS) as RESULTS NATURAL JOIN MEET NATURAL JOIN Athlete
-                                    WHERE SCORE != ''
+                                    WHERE SCORE != '00:00:00'
+                                    AND EX != 'X'
+                                    AND I_R = 'I'
                                     AND SEX = 'F'
                                     AND DISTANCE = \"$event->DISTANCE\"
                                     AND STROKE = \"$event->STROKE\"
@@ -1072,14 +1084,14 @@ function get_team_records() {
                                         SCORE,
                                         YEAR(Start) as YEAR
                                         FROM
-                                        (SELECT MEET, ATHLETE, LPAD(TRIM(`SCORE`),8,'00:') AS SCORE, DISTANCE, STROKE, PLACE, I_R FROM RESULTS
+                                        (SELECT MEET, ATHLETE, LPAD(TRIM(`SCORE`),8,'00:') AS SCORE, DISTANCE, STROKE, PLACE, I_R, EX FROM RESULTS
                                         UNION ALL
-                                        SELECT MEET, ATHLETE, LPAD(TRIM(`SCORE`),8,'00:') AS SCORE, DISTANCE, STROKE, PLACE, I_R FROM MANUAL_RESULTS) AS RESULTS
+                                        SELECT MEET, ATHLETE, LPAD(TRIM(`SCORE`),8,'00:') AS SCORE, DISTANCE, STROKE, PLACE, I_R, \"\" AS EX FROM MANUAL_RESULTS) AS RESULTS
                                         JOIN MEET ON MEET.MEET = RESULTS.MEET JOIN (SELECT Athlete,
                                         Athlete.First,Pref,Last,Sex,Inactive,CusValue1,CusValue2,CusValue3,CusValue4,CusValue5,CusValue6,CusValue7,City, State FROM Athlete
                                         UNION ALL
                                         SELECT Athlete, First,Pref,Last,Sex,Inactive,CusValue1,CusValue2,CusValue3,CusValue4,CusValue5,CusValue6,CusValue7,City, State FROM MANUAL_Athlete) AS Athlete ON RESULTS.ATHLETE = Athlete.ATHLETE
-                                        WHERE I_R = \"I\" AND DISTANCE = $distance AND STROKE = \"$stroke\" AND SCORE != '00:00:00' AND Sex = \"$sex\" ORDER BY SCORE ASC LIMIT 1");
+                                        WHERE I_R = \"I\" AND DISTANCE = $distance AND STROKE = \"$stroke\" AND SCORE != '00:00:00' AND EX != 'X' AND Sex = \"$sex\" ORDER BY SCORE ASC LIMIT 1");
           array_push($records, $record);
         }
         $html .= '<div class="row records_row">';
