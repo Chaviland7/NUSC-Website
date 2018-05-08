@@ -411,7 +411,7 @@ button.close {
 
 .row.swimmer_modal_top .row.info_container div {
     height: calc(438px/5);
-    padding-top: 32px;
+    padding-top: 26px;
 }
 
 div.row.swimmer_modal_top .img_container img {
@@ -504,6 +504,11 @@ a.dropdown-toggle:hover {
 .navbar-default .navbar-nav li a.dropdown-toggle,
 .navbar-default .navbar-nav.navbar-right li a {
     color: white;
+}
+
+.btn-snapchat {
+	color: black;
+	background-color: #fffc02;
 }
 
 button.donate.btn {

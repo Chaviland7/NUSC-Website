@@ -48,6 +48,10 @@
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css" rel="stylesheet" />
 		<?php wp_enqueue_script("jquery"); ?>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+		<script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+		<link href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
+		
 		<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>-->
 		<?php wp_head();?>
 		<script>
@@ -133,6 +137,11 @@
 					var stroke2 = button.data('stroke2')
 					var stroke = stroke1;
 					if (stroke2.length) stroke += "/"+stroke2;
+					var major1 = button.data('major1')
+					var major2 = button.data('major2')
+					var major = major1;
+					if (major2.length) major += "/"+major2;
+
 					var id = button.data('athlete')
 
 					jQuery('#tobeloaded').css("display","none");
@@ -154,6 +163,7 @@
 					modal.find('.swimmer_page_info_row.year h3').html('<b>Year:</b> '+display_year(current_year))
 					modal.find('.swimmer_page_info_row.high_school h3').html('<b>High School:</b> '+high_school)
 					modal.find('.swimmer_page_info_row.hometown h3').html('<b>Hometown:</b> '+hometown)
+					modal.find('.swimmer_page_info_row.major h3').html('<b>Major:</b>'+major);
 					modal.find('.swimmer_modal_top .img_container img').attr('src',img_url)
 					modal.find('h4.modal-title').html(first_name+' '+last_name)
 
@@ -266,7 +276,7 @@
 								</li>
 							<?php } else { ?>
 								<li>
-									<a href="<?php bloginfo('url') + '/wp-login.php';?>">Login</a>
+									<a href="<?= get_bloginfo('url') + '/wp-admin';?>">Login</a>
 								</li>
 							<?php } ?>
 					</ul>

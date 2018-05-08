@@ -2,6 +2,9 @@
 /**
  * Template Name: E-Board Page
  */
+ if( !defined( 'ABSPATH' ) ) {
+   exit;
+ }
 get_header(); ?>
 
 <div class="content-container">
@@ -14,12 +17,27 @@ get_header(); ?>
 <?php } else { ?>
   <h1 class="title"><?=get_the_title();?></h1>
   <hr />
-  <?php echo get_admin_page();
-} ?>
+  <div class="row">
+    <div class="col-md-3">
+      <?=get_admin_page(); ?>
+    </div>
+    <div class="col-md-9">
+      <?=get_manual_results_table();?>
+    </div>
+<?php } ?>
 
   </div>
 </div>
 
-<?php get_footer();
-
-?>
+<?php get_footer(); ?>
+<script>
+  $(document).ready( function () {
+    $('#manual_results').DataTable();
+  });
+  $('#add_result_form').on('submit', (e) => {
+    const formData = new FormData(e.target);
+    insert_result(formData)
+    // Now you can use formData.get('foo'), for example.
+    // Don't forget e.preventDefault() if you want to stop normal form .submission
+  });
+</script>

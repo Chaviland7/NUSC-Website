@@ -1,4 +1,5 @@
 <?php
+
 $current_season = $wpdb->get_results("SELECT YEAR(DATE_ADD(current_date(), INTERVAL 6 MONTH)) as CurrentSeason")[0];
 $events = $wpdb->get_results("SELECT DISTANCE,STROKE
                               FROM RESULTS WHERE I_R = 'I'
@@ -226,7 +227,7 @@ function get_header_row() {
 	$count = 0;
 	$header_args = array('post_type' => 'page',
 						 'sort_order' => 'desc',
-						 'include' => array(7,17,13,11,14));
+						 'include' => array(7,17,13,11));
 	$pages = get_pages($header_args);
 
 	foreach ($pages as $page) {
@@ -526,6 +527,8 @@ function get_modal_name($swimmerID, $name) {
       EBoard,
       Stroke1,
       Stroke2,
+      Major1,
+      Major2,
       Medication as HS,
       CONCAT(City, ', ', State) AS Hometown
       FROM
@@ -584,6 +587,8 @@ function get_roster($sex) {
                                   AF.EBoard,
                                   AF.Stroke1,
                                   AF.Stroke2,
+                                  AF.Major1,
+                                  AF.Major2,
                                   A.Medication as HS,
                                   A.City,
                                   A.State,
@@ -594,6 +599,7 @@ function get_roster($sex) {
 	$html = '';
 	foreach ($swimmers as $swimmer) {
     $stroke = (empty($swimmer->Stroke2)) ? $swimmer->Stroke1 : $swimmer->Stroke1.'/'.$swimmer->Stroke2;
+    $major = (empty($swimmer->Major2)) ? $swimmer->Major1 : $swimmer->Major1.'/'.$swimmer->Major2;
     $hometown = (empty($swimmer->State) || $swimmer->Cntry != 'USA') ? $swimmer->City.', '.$swimmer->Cntry : $swimmer->Hometown;
 		$full_name = $swimmer->First.' '.$swimmer->Last;
 		$html .= '<div class="row roster-row">';
@@ -612,12 +618,15 @@ function get_roster($sex) {
 				$html .= '<div class="col-sm-4 hometown">';
           $html .= (empty($hometown)) ? '<p class="unknown">Hometown</p>' : '<p>'.$hometown.'</p>';
 				$html .= '</div>';
-        $html .= '<div class="col-sm-6 stroke">';
+        $html .= '<div class="col-sm-4 stroke">';
           $html .= (empty($stroke)) ? '<p class="unknown">Stroke</p>' : '<p>'.$stroke.'</p>';
 				$html .= '</div>';
-        $html .= '<div class="col-sm-6 high_school">';
+        $html .= '<div class="col-sm-4 high_school">';
           $html .= (empty($swimmer->HS)) ? '<p class="unknown">High School</p>' : '<p>'.$swimmer->HS.'</p>';
 				$html .= '</div>';
+        $html .= '<div class="col-sm-4 major">';
+          $html .= (empty($major)) ? '<p class="unknown">Major</p>' : '<p>'.$major.'</p>';
+        $html .= '</div>';
 			$html .= '</div>';
 		$html .= '</div>';
 	}
@@ -629,20 +638,34 @@ function get_times_table($athlete_id) {
   $html = '';
   $season_count = 0;
   $seasons = $wpdb->get_results("SELECT YEAR(DATE_ADD(MEET.Start, INTERVAL 6 MONTH)) as year FROM
-    (SELECT ATHLETE, MEET FROM RESULTS WHERE ATHLETE = $athlete_id
+    (SELECT ATHLETE, MEET FROM RESULTS WHERE ATHLETE = $athlete_id AND I_R = 'I'
     UNION ALL
-    SELECT ATHLETE, MEET FROM MANUAL_RESULTS WHERE ATHLETE = $athlete_id)
-    AS RESULTS NATURAL JOIN MEET WHERE ATHLETE = $athlete_id GROUP BY year ORDER BY year desc");
+    SELECT ATHLETE, MEET FROM MANUAL_RESULTS WHERE ATHLETE = $athlete_id AND I_R = 'I'
+    UNION ALL
+    SELECT RESULTS.ATHLETE, RESULTS.MEET FROM RESULTS
+		JOIN RELAY ON RESULTS.ATHLETE = RELAY.RELAY
+        WHERE RELAY.`ATH(1)` = $athlete_id
+			      OR RELAY.`ATH(2)` = $athlete_id
+            OR RELAY.`ATH(3)` = $athlete_id
+            OR RELAY.`ATH(4)` = $athlete_id)
+    AS RESULTS NATURAL JOIN MEET WHERE ATHLETE = $athlete_id GROUP BY year ORDER BY year DESC");
   $html .='<div id="timestable">';
+
+  if (empty($seasons)){
+    $html.='<div class="row best_time">
+      <div class="no_times">No Times Available</div>
+    </div>';
+  }
+
   foreach($seasons as $season) {
     $results = $wpdb->get_results("SELECT RESULTS.MEET,
       Athlete.ATHLETE,
       Athlete.SEX as Sex,
-     MIN(TRIM(SCORE)) as SCORE,
-     DISTANCE,
-     STROKE,
-     PLACE,
-     I_R,
+     MIN(TRIM(RESULTS.SCORE)) as SCORE,
+     RESULTS.DISTANCE,
+     RESULTS.STROKE,
+     RESULTS.PLACE,
+     RESULTS.I_R,
      MName,
      Start,
      Location,
@@ -664,6 +687,8 @@ function get_times_table($athlete_id) {
        PLACE,
        I_R
     FROM RESULTS
+    WHERE I_R = 'I'
+        OR I_R = 'L'
     UNION ALL
     SELECT MEET,
     	     ATHLETE,
@@ -672,22 +697,142 @@ function get_times_table($athlete_id) {
            STROKE,
            PLACE,
            I_R
-    FROM MANUAL_RESULTS) as RESULTS
+    FROM MANUAL_RESULTS
+    WHERE I_R = 'I'
+        OR I_R = 'L') as RESULTS
     JOIN MEET ON MEET.MEET = RESULTS.MEET
     JOIN QUALIFYING_TIMES on concat(RESULTS.DISTANCE,' ',RESULTS.STROKE) = QUALIFYING_TIMES.Event
     JOIN Athlete on Athlete.Athlete = RESULTS.Athlete
+    JOIN (SELECT ATHLETE, DISTANCE, STROKE, MIN(LPAD(TRIM(`SCORE`),8,'00:')) AS SCORE
+		FROM (SELECT MEET,
+			ATHLETE,
+			LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+			DISTANCE,
+			STROKE
+			FROM RESULTS
+			WHERE SCORE != '00:00:00'
+				AND SCORE != ''
+				AND (I_R = 'I' OR I_R = 'L')
+				AND ATHLETE = $athlete_id
+		UNION ALL
+		SELECT MEET,
+			ATHLETE,
+			LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+			DISTANCE,
+			STROKE
+			FROM MANUAL_RESULTS
+			WHERE SCORE != '00:00:00'
+				AND SCORE != ''
+				AND (I_R = 'I' OR I_R = 'L')
+				AND ATHLETE = $athlete_id) RESULTS
+		JOIN MEET ON RESULTS.MEET = MEET.MEET
+        WHERE (YEAR(DATE_ADD(MEET.Start, INTERVAL 6 MONTH)) = $season->year)
+			GROUP BY ATHLETE, DISTANCE, STROKE) RESULTS_2
+		ON RESULTS.SCORE = RESULTS_2.SCORE
+			AND RESULTS.STROKE = RESULTS_2.STROKE
+			AND RESULTS.DISTANCE = RESULTS_2.DISTANCE
     WHERE RESULTS.ATHLETE = $athlete_id
-    #AND ((YEAR(MEET.Start) = $season->year AND MONTH(MEET.Start) <= 6) OR (YEAR(MEET.Start) = $season->year - 1 AND MONTH(MEET.Start) > 6))
     AND (YEAR(DATE_ADD(MEET.Start, INTERVAL 6 MONTH)) = $season->year)
-    AND SCORE != ''
-    GROUP BY DISTANCE, STROKE
+    AND RESULTS.SCORE != ''
+    GROUP BY RESULTS.DISTANCE, RESULTS.STROKE
     ORDER BY CASE
-  	WHEN STROKE = 'Free' THEN 1
-    WHEN STROKE = 'Back' THEN 2
-    WHEN STROKE = 'Breast' THEN 3
-    WHEN STROKE = 'Fly' THEN 4
-    WHEN STROKE = 'IM' THEN 5
-    ELSE STROKE END, CAST(DISTANCE as unsigned) ASC");
+  	WHEN RESULTS.STROKE = 'Free' THEN 1
+    WHEN RESULTS.STROKE = 'Back' THEN 2
+    WHEN RESULTS.STROKE = 'Breast' THEN 3
+    WHEN RESULTS.STROKE = 'Fly' THEN 4
+    WHEN RESULTS.STROKE = 'IM' THEN 5
+    ELSE RESULTS.STROKE END, CAST(RESULTS.DISTANCE as unsigned) ASC");
+
+    $relays = $wpdb->get_results("SELECT RESULTS.MEET AS MEET,
+      RELAY.RELAY AS RELAY,
+      RELAY.`ATH(1)` AS ATHLETE_1,
+	  RELAY.`ATH(2)` AS ATHLETE_2,
+      RELAY.`ATH(3)` AS ATHLETE_3,
+      RELAY.`ATH(4)` AS ATHLETE_4,
+      RELAY.SEX as Sex,
+     MIN(TRIM(RESULTS.SCORE)) as SCORE,
+     RESULTS.DISTANCE AS DISTANCE,
+     RESULTS.STROKE AS STROKE,
+     RESULTS.PLACE AS PLACE,
+     RESULTS.I_R AS I_R,
+     MName,
+     Start,
+     Location,
+     date_format(Start,'%M %D, %Y') as meetdate FROM (
+       SELECT MEET,
+	     ATHLETE,
+       SUBSTRING(CAST(
+		CASE
+		WHEN SCORE IS NULL THEN 0
+		WHEN LOCATE(\":\",SCORE) = 0 THEN TIME_FORMAT(SCORE,'%i:%s.%f')
+		WHEN LOCATE(\":\",SCORE) >= 3 THEN TIME_FORMAT(SCORE,'%h:%i.%f')
+		ELSE \"panda\"
+		END
+		AS char),1,8) AS SCORE,
+       DISTANCE,
+       STROKE,
+       PLACE,
+       I_R
+    FROM RESULTS
+    WHERE I_R = 'R'
+    UNION ALL
+    SELECT MEET,
+    	     ATHLETE,
+           TRIM(SCORE) as SCORE,
+           DISTANCE,
+           STROKE,
+           PLACE,
+           I_R
+    FROM MANUAL_RESULTS
+    WHERE I_R = 'R') as RESULTS
+    JOIN MEET ON MEET.MEET = RESULTS.MEET
+    JOIN RELAY ON RELAY.RELAY = RESULTS.Athlete
+	JOIN (SELECT DISTANCE, STROKE, MIN(LPAD(TRIM(`SCORE`),8,'00:')) AS SCORE
+		FROM (SELECT RESULTS.MEET,
+			ATHLETE,
+			LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+			RESULTS.DISTANCE,
+			RESULTS.STROKE
+			FROM RESULTS
+            JOIN RELAY ON RESULTS.ATHLETE = RELAY.RELAY
+			WHERE RESULTS.SCORE != '00:00:00'
+				AND RESULTS.SCORE != ''
+				AND RESULTS.I_R = 'R'
+                AND (RELAY.`ATH(1)` = $athlete_id
+					OR RELAY.`ATH(2)` = $athlete_id
+                    OR RELAY.`ATH(3)` = $athlete_id
+                    OR RELAY.`ATH(4)` = $athlete_id)
+		UNION ALL
+		SELECT MANUAL_RESULTS.MEET,
+			ATHLETE,
+			LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+			MANUAL_RESULTS.DISTANCE,
+			MANUAL_RESULTS.STROKE
+			FROM MANUAL_RESULTS
+            JOIN RELAY ON MANUAL_RESULTS.ATHLETE = RELAY.RELAY
+			WHERE SCORE != '00:00:00'
+				AND SCORE != ''
+				AND I_R = 'R'
+				AND (RELAY.`ATH(1)` = $athlete_id
+					OR RELAY.`ATH(2)` = $athlete_id
+                    OR RELAY.`ATH(3)` = $athlete_id
+                    OR RELAY.`ATH(4)` = $athlete_id)) RESULTS
+		JOIN MEET ON RESULTS.MEET = MEET.MEET
+        WHERE (YEAR(DATE_ADD(MEET.Start, INTERVAL 6 MONTH)) = $season->year)
+			GROUP BY DISTANCE, STROKE) RESULTS_2
+		ON RESULTS.SCORE = RESULTS_2.SCORE
+			AND RESULTS.STROKE = RESULTS_2.STROKE
+			AND RESULTS.DISTANCE = RESULTS_2.DISTANCE
+    AND (YEAR(DATE_ADD(MEET.Start, INTERVAL 6 MONTH)) = $season->year)
+    AND RESULTS.SCORE != ''
+    GROUP BY RESULTS.DISTANCE, RESULTS.STROKE
+    ORDER BY CASE
+  	WHEN RESULTS.STROKE = 'Free' THEN 1
+    WHEN RESULTS.STROKE = 'Back' THEN 2
+    WHEN RESULTS.STROKE = 'Breast' THEN 3
+    WHEN RESULTS.STROKE = 'Fly' THEN 4
+    WHEN RESULTS.STROKE = 'IM' THEN 5
+    ELSE RESULTS.STROKE END, CAST(RESULTS.DISTANCE as unsigned) ASC");
 
     if (!empty($results)) {
       $html .='<div class="season_header dark_blue">
@@ -703,42 +848,51 @@ function get_times_table($athlete_id) {
       </div>';
     }
 
-    if (empty($results)){
-      $html.='<div class="row best_time">
-      	<div class="no_times">No Times Available</div>
-      </div>';
-    }
-    else {
-      $isCurrentSeason = ($season_count == 0) ? true : false;
-      foreach($results as $result) {
-        $qual_time = ($result->Sex == 'M') ? $result->MaleTime : $result->FemaleTime;
-        $html .= '<div class="row best_time">';
-      	  $html .= '<div class="event';
-          $html .= (($result->SCORE < $qual_time) && $isCurrentSeason) ? ' qualified' : "";
-          $html .= '">';
-          $html .= $result->DISTANCE.' '.$result->STROKE;
-          $html .= ($result->I_R == "R") ? " Relay" : "";
-          $html .= '</div>';
-      	  $html .= '<div class="time';
-          if ($isCurrentSeason) {
-            if ($result->SCORE < $qual_time) {
-              $html .= ' qualified';
-            } else {
-              $timeToDrop = time_to_seconds($result->SCORE) - time_to_seconds($qual_time);
-              $tooltipString = "Drop ".$timeToDrop." seconds to qualify!";
-              $html .= '" data-toggle="tooltip" data-placement="top" title="'.$tooltipString;
-            }
-          }
-          $html .= '">';
-          $html .= $result->SCORE;
-          $html .= ($result->PLACE < 20 && strpos($result->MName, 'Nationals') !== false) ? /*'^'*/'' : '';
-          $html .= '</div>';
-      	  $html .= '<div class="meet">'.$result->MName.'</div>';
-      	  $html .= '<div class="venue">'.$result->Location.'</div>';
-      	  $html .= '<div class="place">'.$result->PLACE.'</div>';
-      	  $html .= '<div class="date">'.$result->meetdate.'</div>';
+    $isCurrentSeason = ($season_count == 0) ? true : false;
+    foreach($results as $result) {
+      $qual_time = ($result->Sex == 'M') ? $result->MaleTime : $result->FemaleTime;
+      $html .= '<div class="row best_time">';
+    	  $html .= '<div class="event';
+        $html .= (($result->SCORE < $qual_time) && $isCurrentSeason) ? ' qualified' : "";
+        $html .= '">';
+        $html .= $result->DISTANCE.' '.$result->STROKE;
+        $html .= ($result->I_R == "R") ? " Relay" : "";
         $html .= '</div>';
-      }
+        $html .= '<div class="time';
+        if ($isCurrentSeason) {
+          if ($result->SCORE < $qual_time) {
+            $html .= ' qualified';
+          } else {
+            $timeToDrop = time_to_seconds($result->SCORE) - time_to_seconds($qual_time);
+            $tooltipString = "Drop ".$timeToDrop." seconds to qualify!";
+            $html .= '" data-toggle="tooltip" data-placement="top" title="'.$tooltipString;
+          }
+        }
+        $html .= '">';
+        $html .= $result->SCORE;
+        $html .= ($result->PLACE < 20 && strpos($result->MName, 'Nationals') !== false) ? /*'^'*/'' : '';
+        $html .= '</div>';
+    	  $html .= '<div class="meet">'.$result->MName.'</div>';
+    	  $html .= '<div class="venue">'.$result->Location.'</div>';
+    	  $html .= '<div class="place">'.$result->PLACE.'</div>';
+      	$html .= '<div class="date">'.$result->meetdate.'</div>';
+      $html .= '</div>';
+    }
+    foreach($relays as $relay) {
+      $html .= '<div class="row best_time">';
+      $html .= '<div class="event">';
+      $html .= $relay->DISTANCE.' ';
+      $html .= ($relay->STROKE == "IM") ? "Medley Relay" : $relay->STROKE.' Relay';
+      $html .= '</div>';
+      $html .= '<div class="time">';
+      $html .= $relay->SCORE;
+      $html .= ($relay->PLACE < 20 && strpos($relay->MName, 'Nationals') !== false) ? /*'^'*/'' : '';
+      $html .= '</div>';
+      $html .= '<div class="meet">'.$relay->MName.'</div>';
+      $html .= '<div class="venue">'.$relay->Location.'</div>';
+      $html .= '<div class="place">'.$relay->PLACE.'</div>';
+      $html .= '<div class="date">'.$relay->meetdate.'</div>';
+      $html .= '</div>';
     }
     $season_count++;
   }
@@ -919,80 +1073,180 @@ function get_top_ten() {
 
   foreach($events as $event) {
     $mens_times = $wpdb->get_results("SELECT ATHLETE,
-                                    	   MIN(SCORE) as SCORE,
-                                           DISTANCE,
-                                           STROKE,
-                                           YEAR(Start) as YEAR,
-                                           CASE WHEN Pref != '' THEN Pref ELSE First END as First,
-                                           Last,
-                                           SEX
-                                    FROM (
-                                    SELECT MEET,
-                                    	   ATHLETE,
-                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
-                                           DISTANCE,
-                                           STROKE,
-                                           PLACE,
-                                           I_R,
-                                           EX
-                                    FROM RESULTS
-                                    UNION ALL
-                                    SELECT MEET,
-                                    	   ATHLETE,
-                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
-                                           DISTANCE,
-                                           STROKE,
-                                           PLACE,
-                                           \"I\" AS I_R,
-                                           \"\" AS EX
-                                    FROM MANUAL_RESULTS) as RESULTS NATURAL JOIN MEET NATURAL JOIN Athlete
-                                    WHERE SCORE != '00:00:00'
-                                    AND EX != 'X'
-                                    AND IR = 'I'
-                                    AND SEX = 'M'
-                                    AND DISTANCE = \"$event->DISTANCE\"
-                                    AND STROKE = \"$event->STROKE\"
-                                    GROUP BY ATHLETE
-                                    ORDER BY SCORE ASC
-                                    LIMIT 10");
+	                                        MIN(SCORE) as SCORE,
+	                                        DISTANCE,
+	                                        STROKE,
+	                                        YEAR(Start) as YEAR,
+	                                        CASE WHEN Pref != '' THEN Pref ELSE First END as First,
+	                                        Last,
+	                                        SEX
+                                        FROM (SELECT C_RESULTS.MEET,
+	                                        C_RESULTS.ATHLETE,
+                                            LPAD(TRIM(C_RESULTS.SCORE),8,'00:') AS SCORE,
+                                            C_RESULTS.DISTANCE,
+                                            C_RESULTS.STROKE,
+                                            C_RESULTS.PLACE,
+                                            C_RESULTS.I_R,
+                                            C_RESULTS.EX
+                                            FROM (
+		                                        SELECT MEET,
+		                                        	ATHLETE,
+                                                    LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+                                                    DISTANCE,
+                                                    STROKE,
+                                                    PLACE,
+                                                    I_R,
+                                                    EX
+			                                        FROM RESULTS
+		                                        UNION ALL
+                                                SELECT MEET,
+			                                        ATHLETE,
+                                                    LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+                                                    DISTANCE,
+                                                    STROKE,
+                                                    PLACE,
+                                                    I_R,
+                                                    \"\" AS EX
+                                                    FROM MANUAL_RESULTS) C_RESULTS
+		                                        JOIN (SELECT ATHLETE, DISTANCE, STROKE, MIN(LPAD(TRIM(`SCORE`),8,'00:')) AS SCORE
+		                                        	FROM (SELECT MEET,
+		                                        		ATHLETE,
+		                                        		LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+		                                        		DISTANCE,
+		                                        		STROKE
+		                                        		FROM RESULTS
+                                                        WHERE SCORE != '00:00:00'
+		                                        			AND SCORE != ''
+                                                        AND (I_R = 'I' OR I_R = 'L')
+		                                        	UNION ALL
+		                                        	SELECT MEET,
+		                                        		ATHLETE,
+		                                        		LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+		                                        		DISTANCE,
+		                                        		STROKE
+		                                        		FROM MANUAL_RESULTS
+		                                        		WHERE SCORE != '00:00:00'
+		                                        			AND SCORE != ''
+                                                        AND (I_R = 'I' OR I_R = 'L')) RESULTS
+                                                        GROUP BY ATHLETE, DISTANCE, STROKE) RESULTS_2
+		                                        	ON C_RESULTS.SCORE = RESULTS_2.SCORE
+		                                        		AND C_RESULTS.STROKE = RESULTS_2.STROKE
+		                                        		AND C_RESULTS.DISTANCE = RESULTS_2.DISTANCE
+                                                        AND C_RESULTS.ATHLETE = RESULTS_2.ATHLETE
+                                            ) as RESULTS NATURAL JOIN
+                                        	(SELECT MEET, Start FROM MEET
+                                        	UNION ALL
+                                        	SELECT MEET, Start FROM MANUAL_MEET) AS MEET NATURAL JOIN
+                                        	(SELECT Athlete,
+                                        		First,
+                                        		Last,
+                                        		Sex,
+                                        		Pref
+                                        		FROM Athlete
+                                        	UNION ALL
+                                        	SELECT Athlete,
+                                        		First,
+                                        		Last,
+                                        		Sex,
+                                        		Pref
+                                        		FROM MANUAL_Athlete) AS Athlete
+                                        	WHERE SCORE != '00:00:00'
+                                        		AND EX != 'X'
+                                        		AND (I_R = 'I' OR I_R = 'L')
+                                        		AND SEX = 'M'
+                                            AND DISTANCE = \"$event->DISTANCE\"
+                                            AND STROKE = \"$event->STROKE\"
+                                        		GROUP BY ATHLETE
+                                        		ORDER BY SCORE ASC
+                                        		LIMIT 10");
 
     $womens_times = $wpdb->get_results("SELECT ATHLETE,
-                                    	   MIN(SCORE) as SCORE,
-                                           DISTANCE,
-                                           STROKE,
-                                           YEAR(Start) as YEAR,
-                                           CASE WHEN Pref != '' THEN Pref ELSE First END as First,
-                                           Last,
-                                           SEX
-                                    FROM (
-                                    SELECT MEET,
-                                    	   ATHLETE,
-                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
-                                           DISTANCE,
-                                           STROKE,
-                                           PLACE,
-                                           I_R,
-                                           EX
-                                    FROM RESULTS
-                                    UNION ALL
-                                    SELECT MEET,
-                                    	   ATHLETE,
-                                           LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
-                                           DISTANCE,
-                                           STROKE,
-                                           PLACE,
-                                           \"I\" AS I_R,
-                                           \"\" AS EX
-                                    FROM MANUAL_RESULTS) as RESULTS NATURAL JOIN MEET NATURAL JOIN Athlete
-                                    WHERE SCORE != '00:00:00'
-                                    AND EX != 'X'
-                                    AND I_R = 'I'
-                                    AND SEX = 'F'
-                                    AND DISTANCE = \"$event->DISTANCE\"
-                                    AND STROKE = \"$event->STROKE\"
-                                    GROUP BY ATHLETE
-                                    ORDER BY SCORE ASC
-                                    LIMIT 10");
+	                                        MIN(SCORE) as SCORE,
+	                                        DISTANCE,
+	                                        STROKE,
+	                                        YEAR(Start) as YEAR,
+	                                        CASE WHEN Pref != '' THEN Pref ELSE First END as First,
+	                                        Last,
+	                                        SEX
+                                        FROM (SELECT C_RESULTS.MEET,
+	                                        C_RESULTS.ATHLETE,
+                                            LPAD(TRIM(C_RESULTS.SCORE),8,'00:') AS SCORE,
+                                            C_RESULTS.DISTANCE,
+                                            C_RESULTS.STROKE,
+                                            C_RESULTS.PLACE,
+                                            C_RESULTS.I_R,
+                                            C_RESULTS.EX
+                                            FROM (
+		                                        SELECT MEET,
+		                                        	ATHLETE,
+                                                    LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+                                                    DISTANCE,
+                                                    STROKE,
+                                                    PLACE,
+                                                    I_R,
+                                                    EX
+			                                        FROM RESULTS
+		                                        UNION ALL
+                                                SELECT MEET,
+			                                        ATHLETE,
+                                                    LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+                                                    DISTANCE,
+                                                    STROKE,
+                                                    PLACE,
+                                                    I_R,
+                                                    \"\" AS EX
+                                                    FROM MANUAL_RESULTS) C_RESULTS
+		                                        JOIN (SELECT ATHLETE, DISTANCE, STROKE, MIN(LPAD(TRIM(`SCORE`),8,'00:')) AS SCORE
+		                                        	FROM (SELECT MEET,
+		                                        		ATHLETE,
+		                                        		LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+		                                        		DISTANCE,
+		                                        		STROKE
+		                                        		FROM RESULTS
+                                                        WHERE SCORE != '00:00:00'
+		                                        			AND SCORE != ''
+                                                        AND (I_R = 'I' OR I_R = 'L')
+		                                        	UNION ALL
+		                                        	SELECT MEET,
+		                                        		ATHLETE,
+		                                        		LPAD(TRIM(`SCORE`),8,'00:') AS SCORE,
+		                                        		DISTANCE,
+		                                        		STROKE
+		                                        		FROM MANUAL_RESULTS
+		                                        		WHERE SCORE != '00:00:00'
+		                                        			AND SCORE != ''
+                                                        AND (I_R = 'I' OR I_R = 'L')) RESULTS
+                                                        GROUP BY ATHLETE, DISTANCE, STROKE) RESULTS_2
+		                                        	ON C_RESULTS.SCORE = RESULTS_2.SCORE
+		                                        		AND C_RESULTS.STROKE = RESULTS_2.STROKE
+		                                        		AND C_RESULTS.DISTANCE = RESULTS_2.DISTANCE
+                                                        AND C_RESULTS.ATHLETE = RESULTS_2.ATHLETE
+                                            ) as RESULTS NATURAL JOIN
+                                        	(SELECT MEET, Start FROM MEET
+                                        	UNION ALL
+                                        	SELECT MEET, Start FROM MANUAL_MEET) AS MEET NATURAL JOIN
+                                        	(SELECT Athlete,
+                                        		First,
+                                        		Last,
+                                        		Sex,
+                                        		Pref
+                                        		FROM Athlete
+                                        	UNION ALL
+                                        	SELECT Athlete,
+                                        		First,
+                                        		Last,
+                                        		Sex,
+                                        		Pref
+                                        		FROM MANUAL_Athlete) AS Athlete
+                                        	WHERE SCORE != '00:00:00'
+                                        		AND EX != 'X'
+                                        		AND (I_R = 'I' OR I_R = 'L')
+                                        		AND SEX = 'F'
+                                            AND DISTANCE = \"$event->DISTANCE\"
+                                            AND STROKE = \"$event->STROKE\"
+                                        		GROUP BY ATHLETE
+                                        		ORDER BY SCORE ASC
+                                        		LIMIT 10");
 
     $all_times = array();
     $num_records = max(count($womens_times),count($mens_times));
@@ -1042,6 +1296,166 @@ function get_top_ten_sidebar() {
   return $html;
 }
 
+function get_admin_page() {
+  $html = '';
+  global $wpdb;
+  $athletes = $wpdb->get_results("SELECT Athlete,
+                                         Pref,
+                                         First,
+                                         Last FROM
+                                         (SELECT Athlete, Pref, First, Last FROM Athlete
+                                         UNION ALL
+                                         SELECT Athlete, \"\" AS Pref, First, Last FROM MANUAL_Athlete)
+                                         AS Athlete");
+  $meets = $wpdb->get_results("SELECT Meet,
+                                     MName FROM
+                                     (SELECT Meet, MName FROM MEET
+                                     UNION ALL
+                                     SELECT Meet, MName FROM MANUAL_MEET)
+                                     AS Meet");
+  $html .= '<form id="add_result_form">';
+    //Athlete
+    $html .= '<div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">Athlete:</span>
+      </div>
+      <input name="athlete" type="text" class="form-control" placeholder="Athlete" aria-label="Athlete" aria-describedby="basic-addon1" list="athletes">
+    </div>';
+
+    //Meet
+    $html .= '<div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon2">Meet:</span>
+      </div>
+      <input name="meet" type="text" class="form-control" placeholder="Meet" aria-label="Meet" aria-describedby="basic-addon2" list="meets">
+    </div>';
+
+    //Time
+    $html .= '<div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon3">Time:</span>
+      </div>
+      <input name="score" type="text" class="form-control" placeholder="Time" aria-label="Time" aria-describedby="basic-addon3" pattern="\d{2}:?\d{2}.?\d{2}">
+    </div>';
+
+    //Distance
+    $html .= '<div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon4">Distance:</span>
+      </div>
+      <select name="distance" class="form-control" aria-label="Distance" aria-describedby="basic-addon4">
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="400">400</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+        <option value="1650">1650</option>
+      </select>
+    </div>';
+
+    //Stroke
+    $html .= '<div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon5">Stroke:</span>
+      </div>
+      <select name="stroke" class="form-control" aria-label="Stroke" aria-describedby="basic-addon5">
+        <option value="Free">Freestyle</option>
+        <option value="Back">Backstroke</option>
+        <option value="Breast">Breaststroke</option>
+        <option value="Fly">Butterfly</option>
+        <option value="IM">IM</option>
+      </select>
+    </div>';
+
+    //Place
+    $html .= '<div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon6">Place:</span>
+      </div>
+      <input name="place" type="number" class="form-control" placeholder="Place" aria-label="Place" aria-describedby="basic-addon6">
+    </div>';
+
+    //I_R
+    $html .= '<div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon7">I_R:</span>
+      </div>
+      <input name="i_r" type="radio" value="I">Individual<br>
+      <input name="i_r" type="radio" value="R">Relay<br>
+      <input name="i_r" type="radio" value="L">Relay Leadoff<br>
+    </div>';
+
+    //Submit
+  $html .= '<button id="add_result_btn" class="btn" type="submit">Add Time</button>';
+  $html .= '</form>';
+
+  //Data Lists
+  $html .= '<datalist id="athletes">';
+  foreach($athletes as $athlete) {
+    $name = ($athlete->Pref != '') ? $athlete->Pref : $athlete->First;
+    $name .= ' '.$athlete->Last;
+    $html .= '<option value="'.$athlete->Athlete.'">'.$name.'</option>';
+  }
+  $html .= '</datalist>';
+  $html .= '<datalist id="meets">';
+  foreach($meets as $meet) {
+    $html .= '<option value="'.$meet->Meet.'">'.$meet->MName.'</option>';
+  }
+  $html .= '</datalist>';
+  return $html;
+}
+
+function get_manual_results_table() {
+  global $wpdb;
+  $html = '
+  <table id="manual_results">
+    <thead>
+      <tr>
+        <th>Athlete</th>
+        <th>Meet</th>
+        <th>Event</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>';
+    $manual_results = $wpdb->get_results("SELECT A.First, A.Last, A.Pref, M.MName, R.Distance, R.Stroke, R.Score
+                                          FROM MANUAL_RESULTS R NATURAL JOIN
+                                          (SELECT Athlete, First, Last, Pref FROM Athlete UNION ALL SELECT Athlete, First, Last, \"\" AS Pref FROM MANUAL_Athlete) AS A NATURAL JOIN
+                                          (SELECT Meet, MName FROM MEET UNION ALL SELECT Meet, MName FROM MANUAL_MEET) AS M");
+    foreach($manual_results as $result) {
+      $name = ($result->Pref == '') ? $result->First.' '.$result->Last : $result->Pref.' '.$result->Last;
+      $html .= "<tr><td>$name</td><td>$result->MName</td><td>$result->Distance $result->Stroke</td><td>$result->Score</td></tr>";
+    }
+    $html .= '</tbody>
+  </table>';
+  return $html;
+}
+
+add_action( 'wp_ajax_add_result', 'nusc_ajax_add_result' );
+
+wp_register_script( 'theme-js', get_template_directory_uri() . '/theme.js', array('jquery'), '1.0', true );
+
+function nusc_start_ajax() {
+	wp_enqueue_script( 'theme-js', get_template_directory_uri() . '/theme.js', array('jquery'), '1.0', true );
+	wp_localize_script('theme-js', 'my_ajax_script', array('ajaxurl' => admin_url('admin-ajax.php')));
+}
+add_action('template_redirect','nusc_start_ajax');
+
+function nusc_ajax_add_result() {
+  global $wpdb;
+  $wpdb->insert('MANUAL_RESULTS',array(
+    'MEET' => $_POST['meet'],
+    'ATHLETE' => $_POST['athlete'],
+    'I_R' => $_POST['i_r'],
+    'SCORE' => $_POST['score'],
+    'DISTANCE' => $_POST['distance'],
+    'STROKE' => $_POST['stroke'],
+    'PLACE' => $_POST['place']),
+    array( '%d', '%d', '%s', '%s', '%s', '%s', '%d')
+  );
+}
+
 function get_team_records() {
   $html = '';
   $strokeCount = 0;
@@ -1087,7 +1501,11 @@ function get_team_records() {
                                         (SELECT MEET, ATHLETE, LPAD(TRIM(`SCORE`),8,'00:') AS SCORE, DISTANCE, STROKE, PLACE, I_R, EX FROM RESULTS
                                         UNION ALL
                                         SELECT MEET, ATHLETE, LPAD(TRIM(`SCORE`),8,'00:') AS SCORE, DISTANCE, STROKE, PLACE, I_R, \"\" AS EX FROM MANUAL_RESULTS) AS RESULTS
-                                        JOIN MEET ON MEET.MEET = RESULTS.MEET JOIN (SELECT Athlete,
+                                        JOIN (SELECT MEET, Start FROM MEET
+                                            UNION ALL
+                                            SELECT MEET, Start FROM MANUAL_MEET) AS MEET
+                                        ON MEET.MEET = RESULTS.MEET
+                                        JOIN (SELECT Athlete,
                                         Athlete.First,Pref,Last,Sex,Inactive,CusValue1,CusValue2,CusValue3,CusValue4,CusValue5,CusValue6,CusValue7,City, State FROM Athlete
                                         UNION ALL
                                         SELECT Athlete, First,Pref,Last,Sex,Inactive,CusValue1,CusValue2,CusValue3,CusValue4,CusValue5,CusValue6,CusValue7,City, State FROM MANUAL_Athlete) AS Athlete ON RESULTS.ATHLETE = Athlete.ATHLETE
